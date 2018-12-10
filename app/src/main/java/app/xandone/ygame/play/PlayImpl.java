@@ -10,7 +10,7 @@ import java.util.List;
  * description:
  */
 public interface PlayImpl {
-    void play();
+    void play(Point point);
 
     void repent();
 

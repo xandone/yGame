@@ -1,6 +1,8 @@
 package app.xandone.ygame.base;
 
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.graphics.Point;
 
 import java.util.ArrayList;
@@ -18,6 +20,8 @@ public abstract class Sprite implements PlayImpl {
     protected Point lastPoint = new Point();
     protected int maxW, maxH;
     protected int current_repent = MAX_REPENT_COUNT;
+
+    protected Bitmap mBitmap;
 
     public static final int MAX_REPENT_COUNT = 3;
 
@@ -96,10 +100,16 @@ public abstract class Sprite implements PlayImpl {
         return false;
     }
 
-    protected abstract void beforeDraw(Canvas canvas);
+    protected abstract void beforeDraw(Canvas canvas, Paint paint);
 
-    protected abstract void onDraw(Canvas canvas);
+    protected abstract void onDraw(Canvas canvas, Paint paint);
 
-    protected abstract void afterDraw(Canvas canvas);
+    protected abstract void afterDraw(Canvas canvas, Paint paint);
+
+    public void draw(Canvas canvas, Paint paint) {
+        beforeDraw(canvas, paint);
+        onDraw(canvas, paint);
+        afterDraw(canvas, paint);
+    }
 
 }
