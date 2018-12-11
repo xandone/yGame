@@ -16,5 +16,7 @@ public interface PlayImpl {
 
     List<Point> getMyPoint();
 
+    List<Point> getMyChess();
+
     boolean isWin();
 }

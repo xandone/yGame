@@ -16,7 +16,8 @@ import app.xandone.ygame.play.PlayImpl;
  * description:
  */
 public abstract class Sprite implements PlayImpl {
-    protected List<Point> myChess = new ArrayList<>();
+    protected List<Point> myChess = new ArrayList<>();//保存绘制的点(实际像素)
+    protected List<Point> myPoint = new ArrayList<>();//保存点(格子)
     protected Point lastPoint = new Point();
     protected int maxW, maxH;
     protected int current_repent = MAX_REPENT_COUNT;
@@ -27,6 +28,11 @@ public abstract class Sprite implements PlayImpl {
 
     @Override
     public List<Point> getMyPoint() {
+        return myPoint;
+    }
+
+    @Override
+    public List<Point> getMyChess() {
         return myChess;
     }
 
@@ -100,16 +106,16 @@ public abstract class Sprite implements PlayImpl {
         return false;
     }
 
-    protected abstract void beforeDraw(Canvas canvas, Paint paint);
-
-    protected abstract void onDraw(Canvas canvas, Paint paint);
-
-    protected abstract void afterDraw(Canvas canvas, Paint paint);
-
     public void draw(Canvas canvas, Paint paint) {
         beforeDraw(canvas, paint);
         onDraw(canvas, paint);
         afterDraw(canvas, paint);
     }
+
+    protected abstract void beforeDraw(Canvas canvas, Paint paint);
+
+    protected abstract void onDraw(Canvas canvas, Paint paint);
+
+    protected abstract void afterDraw(Canvas canvas, Paint paint);
 
 }

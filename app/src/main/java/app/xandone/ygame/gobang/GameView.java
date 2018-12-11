@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import app.xandone.ygame.R;
+import app.xandone.ygame.base.Sprite;
 import app.xandone.ygame.conifg.Config;
 import app.xandone.ygame.play.GobangImpl;
 import app.xandone.ygame.player.HumanPlayer;
@@ -28,6 +29,8 @@ import app.xandone.ygame.player.HumanPlayer;
 public class GameView extends View implements GobangImpl {
     private int mWidth;
     private int mHeight;
+    private int mRow;
+    private int mCol;
 
     private List<Point> freePoints;
     private Paint mPaint;
@@ -35,8 +38,11 @@ public class GameView extends View implements GobangImpl {
     private Bitmap mBufferBitmap;
 
     private HumanPlayer mHuman;
+    private Sprite AIPlayer;
     private Bitmap mWhiteBtm;
     private Bitmap mBlackBtm;
+
+    private boolean isHuman;
 
     public GameView(Context context) {
         this(context, null);
@@ -56,10 +62,10 @@ public class GameView extends View implements GobangImpl {
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mPaint.setColor(Color.BLACK);
 
-
         mWhiteBtm = BitmapFactory.decodeResource(getResources(), R.drawable.p2);
         mBlackBtm = BitmapFactory.decodeResource(getResources(), R.drawable.p1);
 
+        isHuman = true;
     }
 
     @Override
@@ -85,6 +91,17 @@ public class GameView extends View implements GobangImpl {
         mBufferBitmap = Bitmap.createBitmap(mWidth, mHeight, Bitmap.Config.ARGB_8888);
         mBufferCanvas = new Canvas(mBufferBitmap);
         mHuman = new HumanPlayer(Bitmap.createScaledBitmap(mWhiteBtm, Config.GRID_WIDTH, Config.GRID_WIDTH, false));
+        AIPlayer = new HumanPlayer(Bitmap.createScaledBitmap(mBlackBtm, Config.GRID_WIDTH, Config.GRID_WIDTH, false));
+
+        mRow = mWidth / Config.GRID_WIDTH;
+        mCol = mHeight / Config.GRID_WIDTH;
+
+        freePoints.clear();
+        for (int i = 0; i < mRow; i++) {
+            for (int j = 0; j < mCol; j++) {
+                freePoints.add(new Point(i, j));
+            }
+        }
     }
 
     @Override
@@ -93,17 +110,16 @@ public class GameView extends View implements GobangImpl {
         drawLine(mBufferCanvas);
         canvas.drawBitmap(mBufferBitmap, 0, 0, mPaint);
         mHuman.draw(canvas, mPaint);
+        AIPlayer.draw(canvas, mPaint);
     }
 
     private void drawLine(Canvas canvas) {
-        int row = mWidth / Config.GRID_WIDTH;
-        int col = mHeight / Config.GRID_WIDTH;
-        int offerX = mWidth - row * Config.GRID_WIDTH;
-        int offerY = mHeight - col * Config.GRID_WIDTH;
-        for (int i = 0; i <= col; i++) {
+        int offerX = mWidth - mRow * Config.GRID_WIDTH;
+        int offerY = mHeight - mCol * Config.GRID_WIDTH;
+        for (int i = 0; i <= mCol; i++) {
             canvas.drawLine(0, i * Config.GRID_WIDTH, mWidth - offerX, i * Config.GRID_WIDTH, mPaint);
         }
-        for (int i = 0; i <= row; i++) {
+        for (int i = 0; i <= mRow; i++) {
             canvas.drawLine(i * Config.GRID_WIDTH, 0, i * Config.GRID_WIDTH, mHeight - offerY, mPaint);
         }
 
@@ -115,13 +131,46 @@ public class GameView extends View implements GobangImpl {
             case MotionEvent.ACTION_UP:
                 float x = event.getX();
                 float y = event.getY();
-                int point_x = Math.round(x / Config.GRID_WIDTH) * Config.GRID_WIDTH - Config.GRID_WIDTH / 2;
-                int point_y = Math.round(y / Config.GRID_WIDTH) * Config.GRID_WIDTH - Config.GRID_WIDTH / 2;
+                int point_x = Math.round(x / Config.GRID_WIDTH);
+                int point_y = Math.round(y / Config.GRID_WIDTH);
                 Point point = new Point(point_x, point_y);
-                mHuman.play(point);
-                invalidate();
+                if (!isFreeBlock(point)) {
+                    return true;
+                }
+                if (isHuman) {
+                    mHuman.play(point);
+                    changeFreeChess(point);
+                    swithChess();
+                    refreshPanel();
+                } else {
+                    AIPlayer.play(point);
+                    changeFreeChess(point);
+                    swithChess();
+                    refreshPanel();
+                }
                 break;
         }
         return true;
     }
+
+    private void swithChess() {
+        isHuman = !isHuman;
+    }
+
+    private void refreshPanel() {
+        invalidate();
+    }
+
+    private void changeFreeChess(Point point) {
+        freePoints.remove(point);
+    }
+
+    private boolean isFreeBlock(Point point) {
+        if (freePoints.contains(point)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
 }

@@ -4,8 +4,10 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Point;
+import android.util.Log;
 
 import app.xandone.ygame.base.Sprite;
+import app.xandone.ygame.conifg.Config;
 
 /**
  * author: xandone
@@ -36,6 +38,10 @@ public class HumanPlayer extends Sprite {
 
     @Override
     public void play(Point point) {
-        myChess.add(point);
+        myPoint.add(point);
+        int point_x = point.x * Config.GRID_WIDTH - Config.GRID_WIDTH / 2;
+        int point_y = point.y * Config.GRID_WIDTH - Config.GRID_WIDTH / 2;
+        Point chess = new Point(point_x, point_y);
+        myChess.add(chess);
     }
 }
