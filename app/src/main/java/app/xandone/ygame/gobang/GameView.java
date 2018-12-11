@@ -1,6 +1,5 @@
 package app.xandone.ygame.gobang;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -11,7 +10,6 @@ import android.graphics.Point;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -22,6 +20,7 @@ import app.xandone.ygame.R;
 import app.xandone.ygame.base.Sprite;
 import app.xandone.ygame.conifg.Config;
 import app.xandone.ygame.play.GobangImpl;
+import app.xandone.ygame.player.Alpha1;
 import app.xandone.ygame.player.HumanPlayer;
 
 /**
@@ -97,8 +96,6 @@ public class GameView extends View implements GobangImpl {
         mHeight = h;
         mBufferBitmap = Bitmap.createBitmap(mWidth, mHeight, Bitmap.Config.ARGB_8888);
         mBufferCanvas = new Canvas(mBufferBitmap);
-        mHuman = new HumanPlayer(Bitmap.createScaledBitmap(mWhiteBtm, Config.GRID_WIDTH, Config.GRID_WIDTH, false), mWidth, mHeight);
-        AIPlayer = new HumanPlayer(Bitmap.createScaledBitmap(mBlackBtm, Config.GRID_WIDTH, Config.GRID_WIDTH, false), mWidth, mHeight);
 
         mRow = mWidth / Config.GRID_WIDTH;
         mCol = mHeight / Config.GRID_WIDTH;
@@ -109,6 +106,9 @@ public class GameView extends View implements GobangImpl {
                 freePoints.add(new Point(i, j));
             }
         }
+
+        mHuman = new HumanPlayer(Bitmap.createScaledBitmap(mWhiteBtm, Config.GRID_WIDTH, Config.GRID_WIDTH, false), mWidth, mHeight, freePoints);
+        AIPlayer = new Alpha1(Bitmap.createScaledBitmap(mBlackBtm, Config.GRID_WIDTH, Config.GRID_WIDTH, false), mWidth, mHeight, freePoints);
     }
 
     @Override
@@ -145,18 +145,19 @@ public class GameView extends View implements GobangImpl {
                     return true;
                 }
                 if (isHuman) {
-                    mHuman.play(point);
+                    mHuman.play(point, AIPlayer.getMyPoint());
                     changeFreeChess(point);
                     swithChess();
                     win_type = TYPE_HUMAN_WIN;
                     refreshPanel(mHuman.isWin());
-                } else {
-                    win_type = TYPE_AI_WIN;
-                    AIPlayer.play(point);
-                    changeFreeChess(point);
-                    swithChess();
-                    refreshPanel(AIPlayer.isWin());
                 }
+//                else {
+//                    win_type = TYPE_AI_WIN;
+//                    AIPlayer.play(point, mHuman.getMyPoint());
+//                    changeFreeChess(point);
+//                    swithChess();
+//                    refreshPanel(AIPlayer.isWin());
+//                }
                 break;
         }
         return true;
@@ -166,8 +167,19 @@ public class GameView extends View implements GobangImpl {
         isHuman = !isHuman;
     }
 
+    private void aiPlay() {
+        win_type = TYPE_AI_WIN;
+        AIPlayer.play(null, mHuman.getMyPoint());
+        swithChess();
+        refreshPanel(AIPlayer.isWin());
+    }
+
     private void refreshPanel(boolean isWin) {
         invalidate();
+        if (!isHuman && !isWin) {
+            aiPlay();
+            return;
+        }
         if (!isWin) {
             return;
         }

@@ -23,13 +23,15 @@ public abstract class Sprite implements PlayImpl {
     protected int current_repent = MAX_REPENT_COUNT;
 
     protected Bitmap mBitmap;
+    protected List<Point> freePoints;
 
     public static final int MAX_REPENT_COUNT = 3;
 
-    public Sprite(Bitmap bitmap, int w, int h) {
+    public Sprite(Bitmap bitmap, int w, int h, List<Point> freePoints) {
         this.mBitmap = bitmap;
         this.maxW = w;
         this.maxH = h;
+        this.freePoints = freePoints;
     }
 
     @Override
@@ -109,6 +111,26 @@ public abstract class Sprite implements PlayImpl {
         while (myPoint.contains(lastPoint) && lastPoint.x < maxW && lastPoint.y < maxH && count < 5) {
             count++;
             lastPoint.set(lastPoint.x + 1, lastPoint.y + 1);
+        }
+        if (count >= 5) {
+            return true;
+        }
+        
+        count = 0;
+        lastPoint.set(point.x, point.y);
+        while (myPoint.contains(lastPoint) && lastPoint.x > 0 && lastPoint.y > 0 && count < 5) {
+            count++;
+            lastPoint.set(lastPoint.x + 1, lastPoint.y - 1);
+        }
+        if (count >= 5) {
+            return true;
+        }
+
+        count = 0;
+        lastPoint.set(point.x, point.y);
+        while (myPoint.contains(lastPoint) && lastPoint.x < maxW && lastPoint.y < maxH && count < 5) {
+            count++;
+            lastPoint.set(lastPoint.x - 1, lastPoint.y + 1);
         }
         if (count >= 5) {
             return true;

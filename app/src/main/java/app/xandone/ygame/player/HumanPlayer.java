@@ -6,6 +6,8 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.util.Log;
 
+import java.util.List;
+
 import app.xandone.ygame.base.Sprite;
 import app.xandone.ygame.conifg.Config;
 
@@ -15,8 +17,8 @@ import app.xandone.ygame.conifg.Config;
  */
 public class HumanPlayer extends Sprite {
 
-    public HumanPlayer(Bitmap bitmap, int w, int h) {
-        super(bitmap, w, h);
+    public HumanPlayer(Bitmap bitmap, int w, int h, List<Point> freePoints) {
+        super(bitmap, w, h, freePoints);
     }
 
     @Override
@@ -37,7 +39,7 @@ public class HumanPlayer extends Sprite {
     }
 
     @Override
-    public void play(Point point) {
+    public void play(Point point, List<Point> enemys) {
         myPoint.add(point);
         int point_x = point.x * Config.GRID_WIDTH - Config.GRID_WIDTH / 2;
         int point_y = point.y * Config.GRID_WIDTH - Config.GRID_WIDTH / 2;
