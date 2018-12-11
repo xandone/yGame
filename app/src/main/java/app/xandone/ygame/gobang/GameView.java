@@ -1,5 +1,6 @@
 package app.xandone.ygame.gobang;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -8,6 +9,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -43,6 +45,11 @@ public class GameView extends View implements GobangImpl {
     private Bitmap mBlackBtm;
 
     private boolean isHuman;
+
+
+    private int win_type = -1;
+    public static final int TYPE_HUMAN_WIN = 1;
+    public static final int TYPE_AI_WIN = 2;
 
     public GameView(Context context) {
         this(context, null);
@@ -90,8 +97,8 @@ public class GameView extends View implements GobangImpl {
         mHeight = h;
         mBufferBitmap = Bitmap.createBitmap(mWidth, mHeight, Bitmap.Config.ARGB_8888);
         mBufferCanvas = new Canvas(mBufferBitmap);
-        mHuman = new HumanPlayer(Bitmap.createScaledBitmap(mWhiteBtm, Config.GRID_WIDTH, Config.GRID_WIDTH, false));
-        AIPlayer = new HumanPlayer(Bitmap.createScaledBitmap(mBlackBtm, Config.GRID_WIDTH, Config.GRID_WIDTH, false));
+        mHuman = new HumanPlayer(Bitmap.createScaledBitmap(mWhiteBtm, Config.GRID_WIDTH, Config.GRID_WIDTH, false), mWidth, mHeight);
+        AIPlayer = new HumanPlayer(Bitmap.createScaledBitmap(mBlackBtm, Config.GRID_WIDTH, Config.GRID_WIDTH, false), mWidth, mHeight);
 
         mRow = mWidth / Config.GRID_WIDTH;
         mCol = mHeight / Config.GRID_WIDTH;
@@ -141,12 +148,14 @@ public class GameView extends View implements GobangImpl {
                     mHuman.play(point);
                     changeFreeChess(point);
                     swithChess();
-                    refreshPanel();
+                    win_type = TYPE_HUMAN_WIN;
+                    refreshPanel(mHuman.isWin());
                 } else {
+                    win_type = TYPE_AI_WIN;
                     AIPlayer.play(point);
                     changeFreeChess(point);
                     swithChess();
-                    refreshPanel();
+                    refreshPanel(AIPlayer.isWin());
                 }
                 break;
         }
@@ -157,8 +166,27 @@ public class GameView extends View implements GobangImpl {
         isHuman = !isHuman;
     }
 
-    private void refreshPanel() {
+    private void refreshPanel(boolean isWin) {
         invalidate();
+        if (!isWin) {
+            return;
+        }
+        switch (win_type) {
+            case TYPE_HUMAN_WIN:
+                showWinDialog("恭喜人类赢了");
+                break;
+            case TYPE_AI_WIN:
+                showWinDialog("恭喜AI赢了");
+                break;
+        }
+    }
+
+    private void showWinDialog(String msg) {
+        new AlertDialog.Builder(getContext())
+                .setTitle("恭喜")
+                .setMessage(msg)
+                .setCancelable(true)
+                .show();
     }
 
     private void changeFreeChess(Point point) {

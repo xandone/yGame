@@ -15,8 +15,8 @@ import app.xandone.ygame.conifg.Config;
  */
 public class HumanPlayer extends Sprite {
 
-    public HumanPlayer(Bitmap bitmap) {
-        this.mBitmap = bitmap;
+    public HumanPlayer(Bitmap bitmap, int w, int h) {
+        super(bitmap, w, h);
     }
 
     @Override

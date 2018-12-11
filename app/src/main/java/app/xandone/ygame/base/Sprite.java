@@ -26,6 +26,12 @@ public abstract class Sprite implements PlayImpl {
 
     public static final int MAX_REPENT_COUNT = 3;
 
+    public Sprite(Bitmap bitmap, int w, int h) {
+        this.mBitmap = bitmap;
+        this.maxW = w;
+        this.maxH = h;
+    }
+
     @Override
     public List<Point> getMyPoint() {
         return myPoint;
@@ -46,38 +52,41 @@ public abstract class Sprite implements PlayImpl {
 
     @Override
     public boolean isWin() {
-        int size = myChess.size();
-        int count = 1;
+        int size = myPoint.size();
+        int count = 0;
         if (size < 5) {
             return false;
         }
-        Point point = myChess.get(size - 1);
+        Point point = myPoint.get(size - 1);
         lastPoint.set(point.x, point.y);
-        while (myChess.contains(lastPoint) && lastPoint.x > 0 && count < 5) {
+        while (myPoint.contains(lastPoint) && lastPoint.x > 0 && count < 5) {
             count++;
             lastPoint.set(lastPoint.x - 1, lastPoint.y);
         }
         if (count >= 5) {
             return true;
         }
-        count = 1;
-        while (myChess.contains(lastPoint) && lastPoint.x < maxW && count < 5) {
+        count = 0;
+        lastPoint.set(point.x, point.y);
+        while (myPoint.contains(lastPoint) && lastPoint.x < maxW && count < 5) {
             count++;
             lastPoint.set(lastPoint.x + 1, lastPoint.y);
         }
         if (count >= 5) {
             return true;
         }
-        count = 1;
-        while (myChess.contains(lastPoint) && lastPoint.y > 0 && count < 5) {
+        count = 0;
+        lastPoint.set(point.x, point.y);
+        while (myPoint.contains(lastPoint) && lastPoint.y > 0 && count < 5) {
             count++;
             lastPoint.set(lastPoint.x, lastPoint.y - 1);
         }
         if (count >= 5) {
             return true;
         }
-        count = 1;
-        while (myChess.contains(lastPoint) && lastPoint.y < maxH && count < 5) {
+        count = 0;
+        lastPoint.set(point.x, point.y);
+        while (myPoint.contains(lastPoint) && lastPoint.y < maxH && count < 5) {
             count++;
             lastPoint.set(lastPoint.x, lastPoint.y + 1);
         }
@@ -85,8 +94,9 @@ public abstract class Sprite implements PlayImpl {
             return true;
         }
 
-        count = 1;
-        while (myChess.contains(lastPoint) && lastPoint.x > 0 && lastPoint.y > 0 && count < 5) {
+        count = 0;
+        lastPoint.set(point.x, point.y);
+        while (myPoint.contains(lastPoint) && lastPoint.x > 0 && lastPoint.y > 0 && count < 5) {
             count++;
             lastPoint.set(lastPoint.x - 1, lastPoint.y - 1);
         }
@@ -94,8 +104,9 @@ public abstract class Sprite implements PlayImpl {
             return true;
         }
 
-        count = 1;
-        while (myChess.contains(lastPoint) && lastPoint.x < maxW && lastPoint.y < maxH && count < 5) {
+        count = 0;
+        lastPoint.set(point.x, point.y);
+        while (myPoint.contains(lastPoint) && lastPoint.x < maxW && lastPoint.y < maxH && count < 5) {
             count++;
             lastPoint.set(lastPoint.x + 1, lastPoint.y + 1);
         }
