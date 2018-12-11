@@ -115,7 +115,7 @@ public abstract class Sprite implements PlayImpl {
         if (count >= 5) {
             return true;
         }
-        
+
         count = 0;
         lastPoint.set(point.x, point.y);
         while (myPoint.contains(lastPoint) && lastPoint.x > 0 && lastPoint.y > 0 && count < 5) {
@@ -151,4 +151,10 @@ public abstract class Sprite implements PlayImpl {
 
     protected abstract void afterDraw(Canvas canvas, Paint paint);
 
+
+    @Override
+    public void reset() {
+        myPoint.clear();
+        myChess.clear();
+    }
 }

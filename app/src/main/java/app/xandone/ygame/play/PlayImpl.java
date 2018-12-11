@@ -19,4 +19,6 @@ public interface PlayImpl {
     List<Point> getMyChess();
 
     boolean isWin();
+
+    void reset();
 }

@@ -807,4 +807,5 @@ public class AIBasePlayer extends Sprite {
     protected void afterDraw(Canvas canvas, Paint paint) {
 
     }
+
 }

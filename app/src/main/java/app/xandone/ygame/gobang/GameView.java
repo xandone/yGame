@@ -17,9 +17,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import app.xandone.ygame.R;
-import app.xandone.ygame.base.Sprite;
 import app.xandone.ygame.conifg.Config;
 import app.xandone.ygame.play.GobangImpl;
+import app.xandone.ygame.player.AIBasePlayer;
 import app.xandone.ygame.player.Alpha1;
 import app.xandone.ygame.player.HumanPlayer;
 
@@ -39,12 +39,11 @@ public class GameView extends View implements GobangImpl {
     private Bitmap mBufferBitmap;
 
     private HumanPlayer mHuman;
-    private Sprite AIPlayer;
+    private AIBasePlayer mAIPlayer;
     private Bitmap mWhiteBtm;
     private Bitmap mBlackBtm;
 
     private boolean isHuman;
-
 
     private int win_type = -1;
     public static final int TYPE_HUMAN_WIN = 1;
@@ -100,34 +99,43 @@ public class GameView extends View implements GobangImpl {
         mRow = mWidth / Config.GRID_WIDTH;
         mCol = mHeight / Config.GRID_WIDTH;
 
+        initFree();
+        drawLine(mBufferCanvas);
+
+        mHuman = new HumanPlayer(Bitmap.createScaledBitmap(mWhiteBtm, Config.GRID_WIDTH, Config.GRID_WIDTH, false), mWidth, mHeight, freePoints);
+        mAIPlayer = new Alpha1(Bitmap.createScaledBitmap(mBlackBtm, Config.GRID_WIDTH, Config.GRID_WIDTH, false), mWidth, mHeight, freePoints);
+    }
+
+    private void initFree() {
         freePoints.clear();
         for (int i = 0; i < mRow; i++) {
             for (int j = 0; j < mCol; j++) {
                 freePoints.add(new Point(i, j));
             }
         }
-
-        mHuman = new HumanPlayer(Bitmap.createScaledBitmap(mWhiteBtm, Config.GRID_WIDTH, Config.GRID_WIDTH, false), mWidth, mHeight, freePoints);
-        AIPlayer = new Alpha1(Bitmap.createScaledBitmap(mBlackBtm, Config.GRID_WIDTH, Config.GRID_WIDTH, false), mWidth, mHeight, freePoints);
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        drawLine(mBufferCanvas);
         canvas.drawBitmap(mBufferBitmap, 0, 0, mPaint);
         mHuman.draw(canvas, mPaint);
-        AIPlayer.draw(canvas, mPaint);
+        mAIPlayer.draw(canvas, mPaint);
     }
 
+    /**
+     * 绘制背景
+     *
+     * @param canvas
+     */
     private void drawLine(Canvas canvas) {
         int offerX = mWidth - mRow * Config.GRID_WIDTH;
         int offerY = mHeight - mCol * Config.GRID_WIDTH;
         for (int i = 0; i <= mCol; i++) {
-            canvas.drawLine(0, i * Config.GRID_WIDTH, mWidth - offerX, i * Config.GRID_WIDTH, mPaint);
+            canvas.drawLine(offerX / 2, i * Config.GRID_WIDTH, mWidth - offerX / 2, i * Config.GRID_WIDTH, mPaint);
         }
         for (int i = 0; i <= mRow; i++) {
-            canvas.drawLine(i * Config.GRID_WIDTH, 0, i * Config.GRID_WIDTH, mHeight - offerY, mPaint);
+            canvas.drawLine(i * Config.GRID_WIDTH + offerX / 2, 0, i * Config.GRID_WIDTH + offerX / 2, mHeight - offerY, mPaint);
         }
 
     }
@@ -145,7 +153,7 @@ public class GameView extends View implements GobangImpl {
                     return true;
                 }
                 if (isHuman) {
-                    mHuman.play(point, AIPlayer.getMyPoint());
+                    mHuman.play(point, mAIPlayer.getMyPoint());
                     changeFreeChess(point);
                     swithChess();
                     win_type = TYPE_HUMAN_WIN;
@@ -169,9 +177,9 @@ public class GameView extends View implements GobangImpl {
 
     private void aiPlay() {
         win_type = TYPE_AI_WIN;
-        AIPlayer.play(null, mHuman.getMyPoint());
+        mAIPlayer.play(null, mHuman.getMyPoint());
         swithChess();
-        refreshPanel(AIPlayer.isWin());
+        refreshPanel(mAIPlayer.isWin());
     }
 
     private void refreshPanel(boolean isWin) {
@@ -211,6 +219,17 @@ public class GameView extends View implements GobangImpl {
         } else {
             return false;
         }
+    }
+
+    /**
+     * 重置
+     */
+    public void reset() {
+        isHuman = true;
+        initFree();
+        mHuman.reset();
+        mAIPlayer.reset();
+        invalidate();
     }
 
 }
