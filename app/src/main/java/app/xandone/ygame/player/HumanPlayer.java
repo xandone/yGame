@@ -39,9 +39,9 @@ public class HumanPlayer extends Sprite {
     }
 
     @Override
-    public void play(Point point, List<Point> enemys) {
+    public void play(Point point, List<Point> enemys, int offset) {
         myPoint.add(point);
-        int point_x = point.x * Config.GRID_WIDTH - Config.GRID_WIDTH / 2;
+        int point_x = point.x * Config.GRID_WIDTH - Config.GRID_WIDTH / 2 + offset;
         int point_y = point.y * Config.GRID_WIDTH - Config.GRID_WIDTH / 2;
         Point chess = new Point(point_x, point_y);
         myChess.add(chess);

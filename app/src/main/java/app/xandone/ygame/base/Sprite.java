@@ -2,12 +2,15 @@ package app.xandone.ygame.base;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
+import android.graphics.Rect;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import app.xandone.ygame.conifg.Config;
 import app.xandone.ygame.play.PlayImpl;
 
 /**
@@ -24,6 +27,7 @@ public abstract class Sprite implements PlayImpl {
 
     protected Bitmap mBitmap;
     protected List<Point> freePoints;
+    protected Paint mPaint;
 
     public static final int MAX_REPENT_COUNT = 3;
 
@@ -32,6 +36,10 @@ public abstract class Sprite implements PlayImpl {
         this.maxW = w;
         this.maxH = h;
         this.freePoints = freePoints;
+        mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mPaint.setStrokeWidth(4);
+        mPaint.setColor(Color.RED);
+        mPaint.setStyle(Paint.Style.STROKE);
     }
 
     @Override
@@ -143,6 +151,11 @@ public abstract class Sprite implements PlayImpl {
         beforeDraw(canvas, paint);
         onDraw(canvas, paint);
         afterDraw(canvas, paint);
+    }
+
+    public void drawRectbg(Canvas canvas, Point point) {
+        Rect rect = new Rect(point.x, point.y, point.x + Config.GRID_WIDTH, point.y + Config.GRID_WIDTH);
+        canvas.drawRect(rect, mPaint);
     }
 
     protected abstract void beforeDraw(Canvas canvas, Paint paint);

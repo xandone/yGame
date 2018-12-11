@@ -777,7 +777,7 @@ public class AIBasePlayer extends Sprite {
 
     //下棋子，对外接口
     @Override
-    public void play(Point p, List<Point> humans) {
+    public void play(Point p, List<Point> humans, int offset) {
         //电脑可以下的一步棋子
         Point result = doAnalysis(myPoint, humans);
         //去除电脑下的棋子
@@ -785,7 +785,7 @@ public class AIBasePlayer extends Sprite {
         //加入到电脑棋子中，下棋了
         myPoint.add(result);
 
-        int point_x = result.x * Config.GRID_WIDTH - Config.GRID_WIDTH / 2;
+        int point_x = result.x * Config.GRID_WIDTH - Config.GRID_WIDTH / 2 + offset;
         int point_y = result.y * Config.GRID_WIDTH - Config.GRID_WIDTH / 2;
         Point chess = new Point(point_x, point_y);
         myChess.add(chess);
@@ -800,6 +800,9 @@ public class AIBasePlayer extends Sprite {
     protected void onDraw(Canvas canvas, Paint paint) {
         for (Point point : myChess) {
             canvas.drawBitmap(mBitmap, point.x, point.y, paint);
+        }
+        if (!myChess.isEmpty()) {
+            drawRectbg(canvas, myChess.get(myChess.size() - 1));
         }
     }
 

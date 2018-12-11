@@ -42,6 +42,8 @@ public class GameView extends View implements GobangImpl {
     private AIBasePlayer mAIPlayer;
     private Bitmap mWhiteBtm;
     private Bitmap mBlackBtm;
+    private int offerX;
+    private int offerY;
 
     private boolean isHuman;
 
@@ -129,8 +131,8 @@ public class GameView extends View implements GobangImpl {
      * @param canvas
      */
     private void drawLine(Canvas canvas) {
-        int offerX = mWidth - mRow * Config.GRID_WIDTH;
-        int offerY = mHeight - mCol * Config.GRID_WIDTH;
+        offerX = mWidth - mRow * Config.GRID_WIDTH;
+        offerY = mHeight - mCol * Config.GRID_WIDTH;
         for (int i = 0; i <= mCol; i++) {
             canvas.drawLine(offerX / 2, i * Config.GRID_WIDTH, mWidth - offerX / 2, i * Config.GRID_WIDTH, mPaint);
         }
@@ -153,7 +155,7 @@ public class GameView extends View implements GobangImpl {
                     return true;
                 }
                 if (isHuman) {
-                    mHuman.play(point, mAIPlayer.getMyPoint());
+                    mHuman.play(point, mAIPlayer.getMyPoint(), offerX / 2);
                     changeFreeChess(point);
                     swithChess();
                     win_type = TYPE_HUMAN_WIN;
@@ -177,7 +179,7 @@ public class GameView extends View implements GobangImpl {
 
     private void aiPlay() {
         win_type = TYPE_AI_WIN;
-        mAIPlayer.play(null, mHuman.getMyPoint());
+        mAIPlayer.play(null, mHuman.getMyPoint(), offerX / 2);
         swithChess();
         refreshPanel(mAIPlayer.isWin());
     }

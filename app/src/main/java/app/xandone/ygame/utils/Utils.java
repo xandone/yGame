@@ -1,4 +1,4 @@
-package app.xandone.ygame;
+package app.xandone.ygame.utils;
 
 import android.content.Context;
 
