@@ -10,6 +10,7 @@ import android.graphics.Point;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -42,8 +43,8 @@ public class GameView extends View implements GobangImpl {
     private AIBasePlayer mAIPlayer;
     private Bitmap mWhiteBtm;
     private Bitmap mBlackBtm;
-    private int offerX;
-    private int offerY;
+    private int offsetX;
+    private int offsetY;
 
     private boolean isHuman;
 
@@ -101,6 +102,9 @@ public class GameView extends View implements GobangImpl {
         mRow = mWidth / Config.GRID_WIDTH;
         mCol = mHeight / Config.GRID_WIDTH;
 
+        offsetX = mWidth - mRow * Config.GRID_WIDTH;
+        offsetY = mHeight - mCol * Config.GRID_WIDTH;
+
         initFree();
         drawLine(mBufferCanvas);
 
@@ -110,8 +114,8 @@ public class GameView extends View implements GobangImpl {
 
     private void initFree() {
         freePoints.clear();
-        for (int i = 0; i < mRow; i++) {
-            for (int j = 0; j < mCol; j++) {
+        for (int i = 0; i <= mRow; i++) {
+            for (int j = 0; j <= mCol; j++) {
                 freePoints.add(new Point(i, j));
             }
         }
@@ -131,13 +135,12 @@ public class GameView extends View implements GobangImpl {
      * @param canvas
      */
     private void drawLine(Canvas canvas) {
-        offerX = mWidth - mRow * Config.GRID_WIDTH;
-        offerY = mHeight - mCol * Config.GRID_WIDTH;
         for (int i = 0; i <= mCol; i++) {
-            canvas.drawLine(offerX / 2, i * Config.GRID_WIDTH, mWidth - offerX / 2, i * Config.GRID_WIDTH, mPaint);
+            canvas.drawLine(offsetX / 2, i * Config.GRID_WIDTH, mWidth - offsetX / 2, i * Config.GRID_WIDTH, mPaint)
+            ;
         }
         for (int i = 0; i <= mRow; i++) {
-            canvas.drawLine(i * Config.GRID_WIDTH + offerX / 2, 0, i * Config.GRID_WIDTH + offerX / 2, mHeight - offerY, mPaint);
+            canvas.drawLine(i * Config.GRID_WIDTH + offsetX / 2, 0, i * Config.GRID_WIDTH + offsetX / 2, mHeight - offsetY, mPaint);
         }
 
     }
@@ -148,14 +151,15 @@ public class GameView extends View implements GobangImpl {
             case MotionEvent.ACTION_UP:
                 float x = event.getX();
                 float y = event.getY();
-                int point_x = Math.round(x / Config.GRID_WIDTH);
+                int point_x = Math.round((x - offsetX / 2) / Config.GRID_WIDTH);
                 int point_y = Math.round(y / Config.GRID_WIDTH);
+                Log.d("yandone", point_x + "   " + point_y);
                 Point point = new Point(point_x, point_y);
                 if (!isFreeBlock(point)) {
                     return true;
                 }
                 if (isHuman) {
-                    mHuman.play(point, mAIPlayer.getMyPoint(), offerX / 2);
+                    mHuman.play(point, mAIPlayer.getMyPoint(), offsetX / 2);
                     changeFreeChess(point);
                     swithChess();
                     win_type = TYPE_HUMAN_WIN;
@@ -179,7 +183,7 @@ public class GameView extends View implements GobangImpl {
 
     private void aiPlay() {
         win_type = TYPE_AI_WIN;
-        mAIPlayer.play(null, mHuman.getMyPoint(), offerX / 2);
+        mAIPlayer.play(null, mHuman.getMyPoint(), offsetX / 2);
         swithChess();
         refreshPanel(mAIPlayer.isWin());
     }

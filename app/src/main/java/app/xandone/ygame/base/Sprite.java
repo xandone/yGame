@@ -76,8 +76,7 @@ public abstract class Sprite implements PlayImpl {
         if (count >= 5) {
             return true;
         }
-        count = 0;
-        lastPoint.set(point.x, point.y);
+        lastPoint.set(point.x + 1, point.y);
         while (myPoint.contains(lastPoint) && lastPoint.x < maxW && count < 5) {
             count++;
             lastPoint.set(lastPoint.x + 1, lastPoint.y);
@@ -85,6 +84,7 @@ public abstract class Sprite implements PlayImpl {
         if (count >= 5) {
             return true;
         }
+
         count = 0;
         lastPoint.set(point.x, point.y);
         while (myPoint.contains(lastPoint) && lastPoint.y > 0 && count < 5) {
@@ -94,8 +94,7 @@ public abstract class Sprite implements PlayImpl {
         if (count >= 5) {
             return true;
         }
-        count = 0;
-        lastPoint.set(point.x, point.y);
+        lastPoint.set(point.x, point.y + 1);
         while (myPoint.contains(lastPoint) && lastPoint.y < maxH && count < 5) {
             count++;
             lastPoint.set(lastPoint.x, lastPoint.y + 1);
@@ -114,8 +113,7 @@ public abstract class Sprite implements PlayImpl {
             return true;
         }
 
-        count = 0;
-        lastPoint.set(point.x, point.y);
+        lastPoint.set(point.x + 1, point.y + 1);
         while (myPoint.contains(lastPoint) && lastPoint.x < maxW && lastPoint.y < maxH && count < 5) {
             count++;
             lastPoint.set(lastPoint.x + 1, lastPoint.y + 1);
@@ -134,8 +132,7 @@ public abstract class Sprite implements PlayImpl {
             return true;
         }
 
-        count = 0;
-        lastPoint.set(point.x, point.y);
+        lastPoint.set(point.x - 1, point.y + 1);
         while (myPoint.contains(lastPoint) && lastPoint.x < maxW && lastPoint.y < maxH && count < 5) {
             count++;
             lastPoint.set(lastPoint.x - 1, lastPoint.y + 1);
