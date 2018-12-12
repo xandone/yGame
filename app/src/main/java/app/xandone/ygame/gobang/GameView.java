@@ -36,6 +36,7 @@ public class GameView extends View implements GobangImpl {
 
     private List<Point> freePoints;
     private Paint mPaint;
+    private Paint mBoundPaint;
     private Canvas mBufferCanvas;
     private Bitmap mBufferBitmap;
 
@@ -47,6 +48,7 @@ public class GameView extends View implements GobangImpl {
     private int offsetY;
 
     private boolean isHuman;
+    private ChessTurnHelper chessTurn;
 
     private int win_type = -1;
     public static final int TYPE_HUMAN_WIN = 1;
@@ -69,6 +71,10 @@ public class GameView extends View implements GobangImpl {
         freePoints = new ArrayList<>();
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mPaint.setColor(Color.BLACK);
+
+        mBoundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mBoundPaint.setColor(Color.BLACK);
+        mBoundPaint.setStrokeWidth(6);
 
         mWhiteBtm = BitmapFactory.decodeResource(getResources(), R.drawable.p2);
         mBlackBtm = BitmapFactory.decodeResource(getResources(), R.drawable.p1);
@@ -136,11 +142,18 @@ public class GameView extends View implements GobangImpl {
      */
     private void drawLine(Canvas canvas) {
         for (int i = 0; i <= mCol; i++) {
-            canvas.drawLine(offsetX / 2, i * Config.GRID_WIDTH, mWidth - offsetX / 2, i * Config.GRID_WIDTH, mPaint)
-            ;
+            if (i == 0 || i == mCol) {
+                canvas.drawLine(offsetX / 2, i * Config.GRID_WIDTH, mWidth - offsetX / 2, i * Config.GRID_WIDTH, mBoundPaint);
+            } else {
+                canvas.drawLine(offsetX / 2, i * Config.GRID_WIDTH, mWidth - offsetX / 2, i * Config.GRID_WIDTH, mPaint);
+            }
         }
         for (int i = 0; i <= mRow; i++) {
-            canvas.drawLine(i * Config.GRID_WIDTH + offsetX / 2, 0, i * Config.GRID_WIDTH + offsetX / 2, mHeight - offsetY, mPaint);
+            if (i == 0 || i == mRow) {
+                canvas.drawLine(i * Config.GRID_WIDTH + offsetX / 2, 0, i * Config.GRID_WIDTH + offsetX / 2, mHeight - offsetY, mBoundPaint);
+            } else {
+                canvas.drawLine(i * Config.GRID_WIDTH + offsetX / 2, 0, i * Config.GRID_WIDTH + offsetX / 2, mHeight - offsetY, mPaint);
+            }
         }
 
     }
@@ -153,7 +166,6 @@ public class GameView extends View implements GobangImpl {
                 float y = event.getY();
                 int point_x = Math.round((x - offsetX / 2) / Config.GRID_WIDTH);
                 int point_y = Math.round(y / Config.GRID_WIDTH);
-                Log.d("yandone", point_x + "   " + point_y);
                 Point point = new Point(point_x, point_y);
                 if (!isFreeBlock(point)) {
                     return true;
@@ -179,6 +191,14 @@ public class GameView extends View implements GobangImpl {
 
     private void swithChess() {
         isHuman = !isHuman;
+        if (chessTurn == null) {
+            return;
+        }
+        if (isHuman) {
+            chessTurn.callback(Config.CHESS_HUMAN_TURN);
+        } else {
+            chessTurn.callback(Config.CHESS_AI_TURN);
+        }
     }
 
     private void aiPlay() {
@@ -236,6 +256,14 @@ public class GameView extends View implements GobangImpl {
         mHuman.reset();
         mAIPlayer.reset();
         invalidate();
+    }
+
+    public void setChessTurnCallback(ChessTurnHelper chessTurn) {
+        this.chessTurn = chessTurn;
+    }
+
+    public interface ChessTurnHelper {
+        void callback(int turn);
     }
 
 }
